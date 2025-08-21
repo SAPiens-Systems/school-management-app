@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "1049527709192",
+    "project_id": "our-school-de45e",
+    "storage_bucket": "our-school-de45e.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1049527709192:android:e0ab540b922d23e8e6abbd",
+        "android_client_info": {
+          "package_name": "com.example.projects"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1049527709192-5cabph75jubdbhtdapj45776nrj52mbf.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDvOuPPU3HYXsP95QsyccwwEtM-djEfdPU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1049527709192-5cabph75jubdbhtdapj45776nrj52mbf.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

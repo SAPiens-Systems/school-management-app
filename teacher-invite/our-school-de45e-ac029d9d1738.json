@@ -1,0 +1,13 @@
+{
+  "type": "service_account",
+  "project_id": "our-school-de45e",
+  "private_key_id": "ac029d9d173892e3ff2f568d085a096514b7d38e",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEuwIBADANBgkqhkiG9w0BAQEFAASCBKUwggShAgEAAoIBAQCruprGEKsE8dB2\nVSJJ4uQrcyg7PeSkh1IyxV4zKIRov7nIRowVl+R8ZDvfMUX/2CN4CmGdgRJWk4I6\nIQLxYQyciyPfKMrNhWw8GqbSnFb2ONwRjafv3enx05yf7u1H+Cojcj9HR0p8NBvd\nCfd54V3KV01CcvEUV7dvxEzvlSic1cucVRLP0+05GUsDsnr/46mVFan47SylSymO\nbXSgRcQVZqjnJ3Mdgf/ID7HsWmgKqBp4A5Hx3VjrKgurQHajbfd8CCixHTDC61RV\nTV7/gBYNCRv2remHpdMI22/DoYmtMj8DU9mOs3a9puV5Fc+/xz3P3HTFVxb6IdC2\nwHB0Hh0RAgMBAAECgf9hGWHqHAKXCSOVxQ1eOaxJ5RMabCSb4ufXTUG2K3Kyx7WE\nSF9s1jWbIBG6YWHzB4MGnNgU9qYnzcAUnhXL5dP7r7DYvXfuPUK1uVwaOcvx7LSC\nOFZ8ij19PumQhMglqWwqHq8o3mZ/U/dtQ/VqNMOTZUmKCPPHTNGroJLf5LbR9iHI\nydRM88nZ53YFHV8idKiEVj5hDtAlQ/XN6XrmZ1ByFq+GBWLxmmWh7mnEpQJfv+Zg\naLN/vFAz8nP8tj2lvUZFZ+gK9qdcaRJiveMM7IbrvfaCRCbCy6tRnF8cP5jhcpmW\nW61Hp7apGjvcAu58jh28kBO1zEHdyp/7RqxwtLECgYEA7uXDW+tpgl8FtvkANf7z\nC0uKIteSztwGOOIH/JUqeDUBuY1Hcxe/HcOaVZNj1BI4oKig9QLuJ0el5yo2AcHH\nOg9a7BDbHRM2fC4B6Tv925kgHKbh5E+Ahs38ubAriwVPBZeiw2jWkcz4WoatREEO\ntu4eVEtBHUkkE0wTckWmC0kCgYEAuAXad4I0UY4hLLb/ZNbMuqH7XvSbBXCzuw0C\nXkoYtO5FwLpWpzbbe3dG2uOxjjCSXNkCFq9gttUEh6j756Uc7gqk9tu8M9S7mGdK\n+lTdnVMobdh0opLg466obvE0MNToH0W94ixZlwHPAYIc3byk5BmUAtAVJg6jjvN4\n/Oome4kCgYAMFI5GbacOMqPlVr4N/PBpV86KaIBB+ZpO8g8ZVKmrHnMR4PUF+uNt\nK+D4BtX7eVhnt188RIOqdNMM13OXrybV5sTgPxH1bG1K5kCufJwfqKSZDk9J7kM/\njdcDxMbO5tvSGpLecsS25riAS2Mjmm6WDYB3Hr8SLgqm9yfclW0KEQKBgFeqijIG\nuE/l6s33e+GZJrz+b9cDplpIH4dLokYy/GQtYtN2sdNFIfhGkV2zvSFk6EUNKJ6P\n+/39qwPJr//hu893CLGFaroybRAknSZ2iYDqXcc+qAnO+Q3eZeU8SUW+F7rWKah2\nwlNbDDfGuWO0+8Sins1cPcb8kFSIjqnGDoEpAoGBAOeU5XtUSXkx2xg0bkvFeBmu\nc1OQ9hjJhfmfUCSHlkZgjHTlvVQnH6WjXyGwSo4q0qW7Rm7+//3yr3rSrZH7BmF+\n/x5jiCETVgah8INlPXKh9X75oS9+OT4T6U53vWgOxS0GZBwlcHe1XfTcFFoOQ4vC\ncaWo511ijcJmGV6hXuQh\n-----END PRIVATE KEY-----\n",
+  "client_email": "teacher-inviter@our-school-de45e.iam.gserviceaccount.com",
+  "client_id": "115080201738956564756",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/teacher-inviter%40our-school-de45e.iam.gserviceaccount.com",
+  "universe_domain": "googleapis.com"
+}
