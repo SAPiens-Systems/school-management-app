@@ -32,7 +32,7 @@ class ApprovalPendingScreen extends StatelessWidget {
                   context,
                   MaterialPageRoute(builder: (_) => const LoginScreen()),
                 ),
-                child: Text('Back to Login', style: AppStyles.buttonText),
+                child: const Text('Back to Login'),
               ),
             ],
           ),

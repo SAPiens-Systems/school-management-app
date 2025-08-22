@@ -8,6 +8,8 @@ import 'package:projects/auth/views/login_screen.dart';
 import 'package:projects/core/constants/app_colors.dart';
 import 'package:projects/firebase_dev_setup.dart';
 import 'package:projects/home/views/home_screen.dart';
+import 'package:projects/students/controllers/student_controller.dart';
+import 'package:projects/students/repositories/student_repository.dart';
 import 'package:provider/provider.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -23,12 +25,18 @@ void main() async {
   runApp(
     MultiProvider(
       providers: [
-        Provider<AuthRepository>(create: (_) => AuthRepository()),
-        Provider<UserRepository>(create: (_) => UserRepository()),
+        // Option 2: Create repositories directly in controller
         ChangeNotifierProvider<AuthController>(
-          create: (context) => AuthController(
-            authRepo: context.read<AuthRepository>(),
-            userRepo: context.read<UserRepository>(),
+          create: (_) => AuthController(
+            authRepo: AuthRepository(),
+            userRepo: UserRepository(),
+          ),
+        ),
+
+        // Add StudentController with same pattern
+        ChangeNotifierProvider<StudentController>(
+          create: (_) => StudentController(
+            repository: StudentRepository(schoolId: 'default_school'),
           ),
         ),
       ],

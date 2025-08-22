@@ -5,8 +5,16 @@ import 'package:projects/auth/views/admin_user_model.dart';
 import 'package:projects/core/exceptions/auth_exceptions.dart';
 
 class AuthController with ChangeNotifier {
-  final AuthRepository _authRepo;
-  final UserRepository _userRepo;
+  AuthRepository _authRepo;
+  UserRepository _userRepo;
+
+  void initialize({
+    required AuthRepository authRepo,
+    required UserRepository userRepo,
+  }) {
+    _authRepo = authRepo;
+    _userRepo = userRepo;
+  }
 
   AuthController({
     required AuthRepository authRepo,

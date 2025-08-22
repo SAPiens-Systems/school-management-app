@@ -79,3 +79,4 @@ But honestly, **you don't need to do anything**. These messages are completely h
 
 
 firebase emulators:start --only auth,firestore
+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

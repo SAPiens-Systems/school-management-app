@@ -3,6 +3,7 @@ import 'package:projects/auth/views/admin_approval_screen.dart';
 import 'package:projects/auth/views/login_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:projects/students/views/student_list_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -122,10 +123,20 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                 ),
                 _DashboardCard(
-                  icon: Icons.school,
-                  title: 'Manage Students',
-                  onTap: () => _showComingSoon('Student Management'),
+                  icon: Icons.people,
+                  title: 'Student Management',
+                  onTap: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => const StudentListScreen(),
+                    ),
+                  ),
                 ),
+                // _DashboardCard(
+                //   icon: Icons.school,
+                //   title: 'Manage Students',
+                //   onTap: () => _showComingSoon('Student Management'),
+                // ),
                 _DashboardCard(
                   icon: Icons.assignment,
                   title: 'Reports',
@@ -163,10 +174,16 @@ class _HomeScreenState extends State<HomeScreen> {
                 mainAxisSpacing: 16,
               ),
               children: [
+                // Add this to your teacher dashboard
                 _DashboardCard(
                   icon: Icons.people,
-                  title: 'My Students',
-                  onTap: () => _showComingSoon('My Students'),
+                  title: 'Student Management',
+                  onTap: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => const StudentListScreen(),
+                    ),
+                  ),
                 ),
                 _DashboardCard(
                   icon: Icons.assignment,
