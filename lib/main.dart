@@ -1,3 +1,4 @@
+import 'package:firebase_app_check/firebase_app_check.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
@@ -6,22 +7,25 @@ import 'package:projects/auth/repositories/auth_repository.dart';
 import 'package:projects/auth/repositories/user_repository.dart';
 import 'package:projects/auth/views/login_screen.dart';
 import 'package:projects/core/constants/app_colors.dart';
-import 'package:projects/firebase_dev_setup.dart';
 import 'package:projects/home/views/home_screen.dart';
-import 'package:projects/students/controllers/student_controller.dart';
-import 'package:projects/students/repositories/student_repository.dart';
 import 'package:provider/provider.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
-  // 👇 Only use emulators in debug mode (not in production)
-  assert(() {
-    useFirebaseEmulators();
-    return true;
-  }());
+  ();
 
+  // Initialize App Check
+  await FirebaseAppCheck.instance.activate(
+    // For Android
+    androidProvider: AndroidProvider.debug, // Use .debug for development
+    // For production on Android:
+    // androidProvider: AndroidProvider.playIntegrity,
+
+    // For iOS
+    // appleProvider: AppleProvider.appAttest,
+  );
   runApp(
     MultiProvider(
       providers: [
@@ -33,12 +37,14 @@ void main() async {
           ),
         ),
 
-        // Add StudentController with same pattern
-        ChangeNotifierProvider<StudentController>(
-          create: (_) => StudentController(
-            repository: StudentRepository(schoolId: 'default_school'),
-          ),
-        ),
+        // //Student Creation Controller
+        // ChangeNotifierProvider(create: (_) => StudentProvider()),
+        // // Add StudentController with same pattern
+        // // ChangeNotifierProvider<StudentController>(
+        // //   create: (_) => StudentController(
+        // //     repository: StudentRepository(schoolId: 'default_school'),
+        // //   ),
+        // // ),
       ],
       child: const MyApp(),
     ),

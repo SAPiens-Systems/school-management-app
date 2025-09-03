@@ -80,11 +80,6 @@ class AuthController with ChangeNotifier {
       final uid = userCredential.user!.uid;
       final userData = await _userRepo.getUserStatus(uid);
 
-      if (userData == null) {
-        await _authRepo.signOut();
-        throw AuthException(message: 'User account not found in database');
-      }
-
       if (userData['status'] != 'approved') {
         await _authRepo.signOut();
         throw AuthException(message: 'Account pending admin approval');

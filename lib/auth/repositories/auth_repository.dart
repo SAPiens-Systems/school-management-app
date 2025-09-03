@@ -79,6 +79,7 @@ class AuthRepository {
       await _firestore.collection('user_status').doc(uid).set({
         'disabled': false,
         'enabledAt': FieldValue.serverTimestamp(),
+        'status': 'approved',
       });
     } catch (e) {
       throw AuthException(message: 'Failed to enable user');
@@ -90,6 +91,7 @@ class AuthRepository {
       await _firestore.collection('user_status').doc(uid).set({
         'disabled': true,
         'disabledAt': FieldValue.serverTimestamp(),
+        'status': 'approved',
       });
     } catch (e) {
       throw AuthException(message: 'Failed to disable user');

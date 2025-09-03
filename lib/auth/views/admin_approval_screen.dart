@@ -28,20 +28,20 @@ class _AdminApprovalScreenState extends State<AdminApprovalScreen> {
 
     try {
       final currentUser = _auth.currentUser;
+
+      await currentUser?.getIdToken(true);
+
       if (currentUser != null) {
         // Get the admin's school ID from their user document
         final userDoc = await _firestore
-            .collectionGroup('users')
-            .where('uid', isEqualTo: currentUser.uid)
-            .limit(1)
+            .collection('users')
+            .doc(currentUser.uid)
             .get();
 
-        if (userDoc.docs.isNotEmpty) {
-          final userData = userDoc.docs.first.data();
-          setState(() {
-            _currentAdminSchoolId = userData['schoolId'];
-          });
-        }
+        final userData = userDoc.exists ? userDoc.data() : null;
+        setState(() {
+          _currentAdminSchoolId = userData?['schoolId'];
+        });
       }
     } catch (e) {
       print('Error loading admin school: $e');
@@ -55,8 +55,8 @@ class _AdminApprovalScreenState extends State<AdminApprovalScreen> {
     try {
       // 1. Update user status to approved
       await _firestore
-          .collection('school_admins')
-          .doc('${schoolId}_admins')
+          .collection('schools')
+          .doc(schoolId)
           .collection('users')
           .doc(userId)
           .update({
@@ -65,6 +65,11 @@ class _AdminApprovalScreenState extends State<AdminApprovalScreen> {
             'approvedBy': _auth.currentUser!.uid,
           });
 
+      await _firestore.collection('users').doc(userId).update({
+        'status': 'approved',
+        'approvedAt': FieldValue.serverTimestamp(),
+        'approvedBy': _auth.currentUser!.uid,
+      });
       // 2. Enable user account in Auth
       final authRepo = Provider.of<AuthRepository>(context, listen: false);
       await authRepo.enableUser(userId);
@@ -85,8 +90,8 @@ class _AdminApprovalScreenState extends State<AdminApprovalScreen> {
     setState(() => _isLoading = true);
     try {
       await _firestore
-          .collection('school_admins')
-          .doc('${schoolId}_admins')
+          .collection('schools')
+          .doc(schoolId)
           .collection('users')
           .doc(userId)
           .update({
@@ -94,6 +99,14 @@ class _AdminApprovalScreenState extends State<AdminApprovalScreen> {
             'rejectedAt': FieldValue.serverTimestamp(),
             'rejectedBy': _auth.currentUser!.uid,
           });
+
+      await _firestore.collection('user').doc(userId).update({
+        'status': 'rejected',
+        'approvedAt': FieldValue.serverTimestamp(),
+        'approvedBy': _auth.currentUser!.uid,
+      });
+
+      //We need to deleted rejected users from db
 
       ScaffoldMessenger.of(
         context,
@@ -126,14 +139,18 @@ class _AdminApprovalScreenState extends State<AdminApprovalScreen> {
       ),
       body: StreamBuilder<QuerySnapshot>(
         stream: _firestore
-            .collection('school_admins')
-            .doc('${_currentAdminSchoolId!}_admins') // ONLY current school
+            .collection('schools')
+            .doc(_currentAdminSchoolId) // ONLY current school
             .collection('users')
             .where('status', isEqualTo: 'pending')
             .snapshots(),
         builder: (context, snapshot) {
           if (snapshot.hasError) {
-            return Center(child: Text('Error: ${snapshot.error}'));
+            return const Center(
+              child: Text(
+                'You don’t have permission to view pending approvals',
+              ),
+            );
           }
 
           if (snapshot.connectionState == ConnectionState.waiting) {

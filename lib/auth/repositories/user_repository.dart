@@ -10,26 +10,26 @@ class UserRepository {
 
   Future<void> createPendingAdminUser(AdminUser user) async {
     try {
+      //Stores userdata in school collection -> SchoolId
       await _firestore
-          .collection('school_admins')
-          .doc('${user.schoolId}_admins')
+          .collection('schools')
+          .doc(user.schoolId)
           .collection('users')
           .doc(user.uid)
           .set(user.toMap());
+
+      //Creates new Users collecion
+      await _firestore.collection('users').doc(user.uid).set(user.toMap());
     } catch (e) {
       throw AuthException(message: 'Failed to create user record');
     }
   }
 
-  Future<Map<String, dynamic>?> getUserStatus(String uid) async {
+  Future<DocumentSnapshot<Map<String, dynamic>>> getUserStatus(
+    String uid,
+  ) async {
     try {
-      final snapshot = await _firestore
-          .collectionGroup('users')
-          .where('uid', isEqualTo: uid)
-          .limit(1)
-          .get();
-
-      return snapshot.docs.isEmpty ? null : snapshot.docs.first.data();
+      return await _firestore.collection('user_status').doc(uid).get();
     } catch (e) {
       throw AuthException(message: 'Failed to fetch user status');
     }
@@ -38,8 +38,8 @@ class UserRepository {
   Future<void> approveUser(String uid, String schoolId) async {
     try {
       await _firestore
-          .collection('school_admins')
-          .doc('${schoolId}_admins')
+          .collection('schools')
+          .doc(schoolId)
           .collection('users')
           .doc(uid)
           .update({'status': 'approved'});

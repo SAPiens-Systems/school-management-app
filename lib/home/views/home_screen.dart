@@ -3,7 +3,7 @@ import 'package:projects/auth/views/admin_approval_screen.dart';
 import 'package:projects/auth/views/login_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:projects/students/views/student_list_screen.dart';
+import 'package:projects/students/controllers/student_creation_controller.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -29,17 +29,14 @@ class _HomeScreenState extends State<HomeScreen> {
       final user = _auth.currentUser;
       if (user != null) {
         final userDoc = await _firestore
-            .collectionGroup('users')
-            .where('uid', isEqualTo: user.uid)
-            .limit(1)
+            .collection('users')
+            .doc(user.uid)
             .get();
 
-        if (userDoc.docs.isNotEmpty) {
-          setState(() {
-            _userData = userDoc.docs.first.data();
-            _isLoading = false;
-          });
-        }
+        setState(() {
+          _userData = userDoc.exists ? userDoc.data() : null;
+          _isLoading = false;
+        });
       }
     } catch (e) {
       setState(() => _isLoading = false);
@@ -122,16 +119,28 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                   ),
                 ),
+
                 _DashboardCard(
-                  icon: Icons.people,
-                  title: 'Student Management',
+                  icon: Icons.person_add,
+                  title: 'Create Student',
                   onTap: () => Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (_) => const StudentListScreen(),
+                      builder: (_) => StudentCreationScreen(schoolId: schoolId),
                     ),
                   ),
                 ),
+
+                // _DashboardCard(
+                //   icon: Icons.people,
+                //   title: 'Student Management',
+                //   onTap: () => Navigator.push(
+                //     context,
+                //     MaterialPageRoute(
+                //       builder: (_) => const StudentListScreen(),
+                //     ),
+                //   ),
+                // ),
                 // _DashboardCard(
                 //   icon: Icons.school,
                 //   title: 'Manage Students',
@@ -175,16 +184,16 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
               children: [
                 // Add this to your teacher dashboard
-                _DashboardCard(
-                  icon: Icons.people,
-                  title: 'Student Management',
-                  onTap: () => Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) => const StudentListScreen(),
-                    ),
-                  ),
-                ),
+                // _DashboardCard(
+                //   icon: Icons.people,
+                //   title: 'Student Management',
+                //   onTap: () => Navigator.push(
+                //     context,
+                //     MaterialPageRoute(
+                //       builder: (_) => const StudentListScreen(),
+                //     ),
+                //   ),
+                // ),
                 _DashboardCard(
                   icon: Icons.assignment,
                   title: 'Attendance',
@@ -199,6 +208,16 @@ class _HomeScreenState extends State<HomeScreen> {
                   icon: Icons.calendar_today,
                   title: 'Schedule',
                   onTap: () => _showComingSoon('Schedule'),
+                ),
+                _DashboardCard(
+                  icon: Icons.details,
+                  title: 'My Details',
+                  onTap: () => _showComingSoon('My Details'),
+                ),
+                _DashboardCard(
+                  icon: Icons.class_,
+                  title: 'Classes',
+                  onTap: () => _showComingSoon('Classes'),
                 ),
               ],
             ),
