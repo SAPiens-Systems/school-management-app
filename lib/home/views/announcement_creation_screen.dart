@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:projects/home/views/announcment_edit_screen';
+import 'package:projects/home/views/edit_announcement_screen.dart';
 import 'package:provider/provider.dart';
 
 // Models
