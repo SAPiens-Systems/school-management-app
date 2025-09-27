@@ -17,7 +17,6 @@ class UserRepository {
           .collection('users')
           .doc(user.uid)
           .set(user.toMap());
-
       //Creates new Users collecion
       await _firestore.collection('users').doc(user.uid).set(user.toMap());
     } catch (e) {
@@ -29,7 +28,7 @@ class UserRepository {
     String uid,
   ) async {
     try {
-      return await _firestore.collection('user_status').doc(uid).get();
+      return await _firestore.collection('users').doc(uid).get();
     } catch (e) {
       throw AuthException(message: 'Failed to fetch user status');
     }

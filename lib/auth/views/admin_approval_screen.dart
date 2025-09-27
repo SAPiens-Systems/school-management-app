@@ -71,8 +71,8 @@ class _AdminApprovalScreenState extends State<AdminApprovalScreen> {
         'approvedBy': _auth.currentUser!.uid,
       });
       // 2. Enable user account in Auth
-      final authRepo = Provider.of<AuthRepository>(context, listen: false);
-      await authRepo.enableUser(userId);
+      //final authRepo = Provider.of<AuthRepository>(context, listen: false);
+      //await authRepo.enableUser(userId);
 
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('User approved successfully')),
@@ -133,10 +133,7 @@ class _AdminApprovalScreenState extends State<AdminApprovalScreen> {
     }
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Pending Approvals - ${_currentAdminSchoolId!}'),
-        backgroundColor: Colors.blue,
-      ),
+      appBar: AppBar(backgroundColor: Colors.blue),
       body: StreamBuilder<QuerySnapshot>(
         stream: _firestore
             .collection('schools')
@@ -212,9 +209,16 @@ class _AdminApprovalScreenState extends State<AdminApprovalScreen> {
 
   String _formatDate(dynamic timestamp) {
     if (timestamp == null) return 'Unknown date';
-    if (timestamp is Timestamp) {
-      return '${timestamp.toDate().day}/${timestamp.toDate().month}/${timestamp.toDate().year}';
+    if (timestamp is String) {
+      try {
+        // Parse the string into a DateTime object
+        DateTime parsedDate = DateTime.parse(timestamp);
+        return '${parsedDate.day}/${parsedDate.month}/${parsedDate.year}';
+      } catch (e) {
+        return 'Invalid date'; // Return 'Invalid date' if parsing fails
+      }
     }
-    return 'Invalid date';
+
+    return 'Invalid date'; // For other types of data
   }
 }

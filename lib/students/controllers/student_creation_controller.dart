@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -5,6 +7,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:intl/intl.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:projects/models/class_model.dart';
 
 class StudentCreationScreen extends StatefulWidget {
   final String schoolId;
@@ -25,45 +28,25 @@ class _StudentCreationScreenState extends State<StudentCreationScreen> {
   String _email = '';
   String _age = '';
   String _gender = '';
-  String _class = '';
+  String _selectedClass = '';
   String _address = '';
   String _phone = '';
   DateTime? _dateOfBirth;
-
   bool _isLoading = false;
+  String _selectedSection = '';
   final List<String> _genders = ['Male', 'Female', 'Other'];
-  final List<String> _classes = [
-    'Class 1A',
-    'Class 1B',
-    'Class 1C',
-    'Class 2A',
-    'Class 2B',
-    'Class 2C',
-    'Class 3A',
-    'Class 3B',
-    'Class 3C',
-    'Class 4A',
-    'Class 4B',
-    'Class 4C',
-    'Class 5A',
-    'Class 5B',
-    'Class 5C',
-    'Class 6A',
-    'Class 6B',
-    'Class 6C',
-    'Class 7A',
-    'Class 7B',
-    'Class 7C',
-    'Class 8A',
-    'Class 8B',
-    'Class 8C',
-    'Class 9A',
-    'Class 9B',
-    'Class 9C',
-    'Class 10A',
-    'Class 10B',
-    'Class 10C',
-  ];
+
+  // Class and section options
+  final List<String> _classOptions = List.generate(
+    10,
+    (index) => 'Class ${index + 1}',
+  );
+  final List<String> _sectionOptions = ['A', 'B', 'C', 'D', 'E'];
+
+  @override
+  void initState() {
+    super.initState();
+  }
 
   @override
   void dispose() {
@@ -105,26 +88,72 @@ class _StudentCreationScreenState extends State<StudentCreationScreen> {
       return;
     }
 
+    if (_selectedClass.isEmpty) {
+      Fluttertoast.showToast(msg: "Please select a class");
+      return;
+    }
+
+    if (_selectedSection.isEmpty) {
+      Fluttertoast.showToast(msg: "Please select a section");
+      return;
+    }
+
     setState(() => _isLoading = true);
 
     try {
+      // Extract class number from selected class (e.g., "Class 5" -> "5")
+      final classNumber = _selectedClass.replaceAll('Class ', '');
+
+      // Create combined class ID in the format "class_X_y" (e.g., class_5_e)
+      final combinedClassId =
+          'class_${classNumber}_${_selectedSection.toLowerCase()}';
+
+      // Create class with proper structure (same as class management screen)
+      final classRef = FirebaseFirestore.instance
+          .collection('schools')
+          .doc(widget.schoolId)
+          .collection('classes')
+          .doc(combinedClassId);
+
+      final classDoc = await classRef.get();
+      if (!classDoc.exists) {
+        // Create class with the same structure as class management screen
+        final schoolClass = SchoolClass(
+          id: combinedClassId,
+          name: 'Class $classNumber', // 'Class 5' not 'Class5E'
+          section: _selectedSection, // 'E'
+          subject: null,
+          schedule: null,
+          room: null,
+          teacherId: '',
+          teacherName: 'Unassigned',
+          studentCount: 0,
+          createdBy: FirebaseAuth.instance.currentUser?.uid ?? '',
+          createdAt: DateTime.now(),
+          updatedAt: DateTime.now(),
+        );
+
+        await classRef.set(schoolClass.toMap());
+      }
+
+      // Then send combinedClassId to your Cloud Function
+      final payload = {
+        'schoolId': widget.schoolId,
+        'name': _name,
+        'email': _email,
+        'gender': _gender,
+        'classId': combinedClassId,
+        'address': _address,
+        'phone': _phone,
+        'dateOfBirth': DateFormat('yyyy-MM-dd').format(_dateOfBirth!),
+      };
+
       // Ensure your admin token is fresh (optional but helpful)
       await FirebaseAuth.instance.currentUser?.getIdToken(true);
 
       final callable = FirebaseFunctions.instanceFor(
         region: 'asia-south1',
       ).httpsCallable('createStudent');
-
-      final payload = {
-        'schoolId': widget.schoolId,
-        'name': _name,
-        'email': _email,
-        'gender': _gender,
-        'className': _class,
-        'address': _address,
-        'phone': _phone,
-        'dateOfBirth': DateFormat('yyyy-MM-dd').format(_dateOfBirth!),
-      };
 
       final result = await callable.call(payload);
       final data = Map<String, dynamic>.from(result.data as Map);
@@ -159,9 +188,9 @@ class _StudentCreationScreenState extends State<StudentCreationScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Create New Student'),
-        backgroundColor: Colors.blue.shade700, // Slightly darker shade
+        backgroundColor: Colors.blue.shade700,
         foregroundColor: Colors.white,
-        elevation: 4, // Added a slight shadow
+        elevation: 4,
         systemOverlayStyle: SystemUiOverlayStyle.light,
       ),
       body: _isLoading
@@ -171,10 +200,8 @@ class _StudentCreationScreenState extends State<StudentCreationScreen> {
               child: Form(
                 key: _formKey,
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment
-                      .start, // Changed to start for better hierarchy
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // --- Header Section ---
                     const Text(
                       'Student Details',
                       style: TextStyle(
@@ -191,32 +218,38 @@ class _StudentCreationScreenState extends State<StudentCreationScreen> {
                         color: Colors.grey.shade600,
                       ),
                     ),
-                    const SizedBox(height: 24.0), // More space after header
-                    // --- Personal Info Group ---
+                    const SizedBox(height: 24.0),
+
+                    // Personal Information Section
                     _buildSectionHeader('Personal Information'),
                     const SizedBox(height: 16.0),
+
                     _buildTextField(
                       controller: null,
                       label: 'Full Name *',
                       icon: Icons.person_outline,
                       validator: (value) {
-                        if (value == null || value.isEmpty)
+                        if (value == null || value.isEmpty) {
                           return 'Please enter student name';
-                        if (value.length < 3)
+                        }
+                        if (value.length < 3) {
                           return 'Name must be at least 3 characters';
+                        }
                         return null;
                       },
                       onSaved: (value) => _name = value!.trim(),
                     ),
                     const SizedBox(height: 16.0),
+
                     _buildTextField(
                       controller: null,
                       label: 'Email Address *',
                       icon: Icons.email_outlined,
                       keyboardType: TextInputType.emailAddress,
                       validator: (value) {
-                        if (value == null || value.isEmpty)
+                        if (value == null || value.isEmpty) {
                           return 'Please enter an email';
+                        }
                         if (!RegExp(
                           r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$',
                         ).hasMatch(value)) {
@@ -240,29 +273,17 @@ class _StudentCreationScreenState extends State<StudentCreationScreen> {
                             readOnly: true,
                             onTap: () => _selectDate(context),
                             validator: (value) {
-                              if (value == null || value.isEmpty)
+                              if (value == null || value.isEmpty) {
                                 return 'Select date of birth';
+                              }
                               return null;
                             },
                           ),
                         ),
                         const SizedBox(width: 16),
-                        Expanded(
-                          flex: 1,
-                          child: _buildTextField(
-                            controller: null,
-                            label: 'Age',
-                            icon: Icons.cake_outlined,
-                            readOnly: true,
-                            initialValue: _age,
-                            enabled: false, // Style disabled state better
-                          ),
-                        ),
                       ],
                     ),
                     const SizedBox(height: 16.0),
-
-                    // Gender & Class in a Row
                     Row(
                       children: [
                         Expanded(
@@ -277,40 +298,65 @@ class _StudentCreationScreenState extends State<StudentCreationScreen> {
                                 value == null ? 'Please select gender' : null,
                           ),
                         ),
-                        const SizedBox(width: 16),
+                      ],
+                    ),
+                    const SizedBox(height: 24.0),
+                    // Class & Section in a Row
+                    Row(
+                      children: [
+                        const SizedBox(width: 2),
                         Expanded(
                           child: _buildDropdownField(
-                            value: _class.isNotEmpty ? _class : null,
+                            value: _selectedClass.isNotEmpty
+                                ? _selectedClass
+                                : null,
                             label: 'Class *',
                             icon: Icons.groups_outlined,
-                            items: _classes,
+                            items: _classOptions,
                             onChanged: (value) =>
-                                setState(() => _class = value!),
+                                setState(() => _selectedClass = value!),
                             validator: (value) =>
                                 value == null ? 'Please select class' : null,
                           ),
                         ),
+                        const SizedBox(width: 16),
+                        Expanded(
+                          child: _buildDropdownField(
+                            value: _selectedSection.isNotEmpty
+                                ? _selectedSection
+                                : null,
+                            label: 'Section *',
+                            icon: Icons.view_module_outlined,
+                            items: _sectionOptions,
+                            onChanged: (value) =>
+                                setState(() => _selectedSection = value!),
+                            validator: (value) =>
+                                value == null ? 'Please select section' : null,
+                          ),
+                        ),
                       ],
                     ),
-                    const SizedBox(
-                      height: 24.0,
-                    ), // More space before next section
-                    // --- Contact Info Group ---
+                    const SizedBox(height: 24.0),
+
+                    // Contact Information Section
                     _buildSectionHeader('Contact Information'),
                     const SizedBox(height: 16.0),
+
                     _buildTextField(
                       controller: null,
                       label: 'Address *',
                       icon: Icons.home_outlined,
                       maxLines: 2,
                       validator: (value) {
-                        if (value == null || value.isEmpty)
+                        if (value == null || value.isEmpty) {
                           return 'Please enter an address';
+                        }
                         return null;
                       },
                       onSaved: (value) => _address = value!.trim(),
                     ),
                     const SizedBox(height: 16.0),
+
                     _buildTextField(
                       controller: null,
                       label: 'Phone Number *',
@@ -318,15 +364,18 @@ class _StudentCreationScreenState extends State<StudentCreationScreen> {
                       keyboardType: TextInputType.phone,
                       inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                       validator: (value) {
-                        if (value == null || value.isEmpty)
+                        if (value == null || value.isEmpty) {
                           return 'Please enter a phone number';
-                        if (value.length != 10)
+                        }
+                        if (value.length != 10) {
                           return 'Enter a valid 10-digit number';
+                        }
                         return null;
                       },
                       onSaved: (value) => _phone = value!.trim(),
                     ),
                     const SizedBox(height: 16.0),
+
                     _buildTextField(
                       initialValue: widget.schoolId,
                       label: 'School ID',
@@ -334,10 +383,9 @@ class _StudentCreationScreenState extends State<StudentCreationScreen> {
                       readOnly: true,
                       enabled: false,
                     ),
-                    const SizedBox(
-                      height: 32.0,
-                    ), // Much more space before the button
-                    // --- Submit Button ---
+                    const SizedBox(height: 32.0),
+
+                    // Submit Button
                     SizedBox(
                       width: double.infinity,
                       child: ElevatedButton(
@@ -347,14 +395,12 @@ class _StudentCreationScreenState extends State<StudentCreationScreen> {
                           foregroundColor: Colors.white,
                           padding: const EdgeInsets.symmetric(vertical: 18.0),
                           shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(
-                              12.0,
-                            ), // More rounded
+                            borderRadius: BorderRadius.circular(12.0),
                           ),
                           elevation: 2,
                           textStyle: const TextStyle(
                             fontSize: 16,
-                            fontWeight: FontWeight.w600, // Semi-bold
+                            fontWeight: FontWeight.w600,
                           ),
                         ),
                         child: _isLoading
@@ -399,16 +445,13 @@ class _StudentCreationScreenState extends State<StudentCreationScreen> {
       decoration: InputDecoration(
         labelText: label,
         prefixIcon: icon != null ? Icon(icon) : null,
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12.0), // More rounded
-        ),
+        border: OutlineInputBorder(borderRadius: BorderRadius.circular(12.0)),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12.0),
           borderSide: BorderSide(color: Colors.grey.shade400),
         ),
         filled: true,
         fillColor: enabled ? Colors.grey[50] : Colors.grey[100],
-        // Improve disabled text color
         labelStyle: TextStyle(color: enabled ? null : Colors.grey.shade700),
       ),
       keyboardType: keyboardType,

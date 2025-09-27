@@ -91,7 +91,7 @@ class AuthRepository {
       await _firestore.collection('user_status').doc(uid).set({
         'disabled': true,
         'disabledAt': FieldValue.serverTimestamp(),
-        'status': 'approved',
+        'status': 'pending',
       });
     } catch (e) {
       throw AuthException(message: 'Failed to disable user');

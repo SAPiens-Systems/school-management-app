@@ -1,3 +1,6 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+
 class Validators {
   static String? validateEmail(String? value) {
     if (value == null || value.isEmpty) {
@@ -93,5 +96,21 @@ class Validators {
       return 'Passwords do not match';
     }
     return null;
+  }
+
+  static Future<bool> isStaff() async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) return false;
+
+    try {
+      final userDoc = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(user.uid)
+          .get();
+
+      return userDoc.exists && userDoc.data()?['role'] == 'teacher';
+    } catch (e) {
+      return false;
+    }
   }
 }

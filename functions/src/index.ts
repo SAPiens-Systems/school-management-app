@@ -131,7 +131,7 @@ export const createStudent = onCall(
     const name: string = String(data.name || "").trim();
     const email: string = String(data.email || "").trim();
     const gender: string = String(data.gender || "").trim();
-    const klass: string = String(data.className || "").trim(); // "Class 6A"
+    const klass: string = String(data.classId || "").trim(); // "Class 6A"
     const address: string = String(data.address || "").trim();
     const phone: string = String(data.phone || "").trim();
     const dobStr: string = String(data.dateOfBirth || "").trim(); // "YYYY-MM-DD"
@@ -201,7 +201,7 @@ export const createStudent = onCall(
       age,
       gender,
       dateOfBirth: dobStr, // store ISO string, or use FieldValue.serverTimestamp() + another field for dob
-      class: klass,
+      classId,
       email,
       address,
       phone,

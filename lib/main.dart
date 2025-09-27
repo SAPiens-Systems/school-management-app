@@ -7,13 +7,14 @@ import 'package:projects/auth/repositories/auth_repository.dart';
 import 'package:projects/auth/repositories/user_repository.dart';
 import 'package:projects/auth/views/login_screen.dart';
 import 'package:projects/core/constants/app_colors.dart';
+import 'package:projects/firebase_options.dart';
 import 'package:projects/home/views/home_screen.dart';
 import 'package:provider/provider.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp();
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   ();
 
   // Initialize App Check
@@ -26,25 +27,43 @@ void main() async {
     // For iOS
     // appleProvider: AppleProvider.appAttest,
   );
+  //   runApp(
+  //     MultiProvider(
+  //       providers: [
+  //         // Option 2: Create repositories directly in controller
+  //         ChangeNotifierProvider<AuthController>(
+  //           create: (_) => AuthController(
+  //             authRepo: AuthRepository(),
+  //             userRepo: UserRepository(),
+  //           ),
+  //         ),
+
+  //         // //Student Creation Controller
+  //         // ChangeNotifierProvider(create: (_) => StudentProvider()),
+  //         // // Add StudentController with same pattern
+  //         // // ChangeNotifierProvider<StudentController>(
+  //         // //   create: (_) => StudentController(
+  //         // //     repository: StudentRepository(schoolId: 'default_school'),
+  //         // //   ),
+  //         // // ),
+  //       ],
+  //       child: const MyApp(),
+  //     ),
+  //   );
+  // }
+
   runApp(
     MultiProvider(
       providers: [
-        // Option 2: Create repositories directly in controller
+        // Provide AuthRepository first
+        Provider<AuthRepository>(create: (_) => AuthRepository()),
+        // Then provide AuthController that depends on it
         ChangeNotifierProvider<AuthController>(
-          create: (_) => AuthController(
-            authRepo: AuthRepository(),
+          create: (context) => AuthController(
+            authRepo: context.read<AuthRepository>(),
             userRepo: UserRepository(),
           ),
         ),
-
-        // //Student Creation Controller
-        // ChangeNotifierProvider(create: (_) => StudentProvider()),
-        // // Add StudentController with same pattern
-        // // ChangeNotifierProvider<StudentController>(
-        // //   create: (_) => StudentController(
-        // //     repository: StudentRepository(schoolId: 'default_school'),
-        // //   ),
-        // // ),
       ],
       child: const MyApp(),
     ),

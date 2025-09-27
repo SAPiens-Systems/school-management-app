@@ -131,7 +131,7 @@ async (request) => {
     const name = String(data.name || "").trim();
     const email = String(data.email || "").trim();
     const gender = String(data.gender || "").trim();
-    const klass = String(data.className || "").trim(); // "Class 6A"
+    const klass = String(data.classId || "").trim(); // "Class 6A"
     const address = String(data.address || "").trim();
     const phone = String(data.phone || "").trim();
     const dobStr = String(data.dateOfBirth || "").trim(); // "YYYY-MM-DD"
@@ -194,7 +194,7 @@ async (request) => {
         age,
         gender,
         dateOfBirth: dobStr, // store ISO string, or use FieldValue.serverTimestamp() + another field for dob
-        class: klass,
+        classId,
         email,
         address,
         phone,
